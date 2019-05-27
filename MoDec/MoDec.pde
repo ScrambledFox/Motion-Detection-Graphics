@@ -1,4 +1,7 @@
+import spout.*;
 import processing.video.*;
+
+Spout spout;
 
 MotionDetection motionDetection;
 CubeGraphics[] graphics;
@@ -27,6 +30,9 @@ void setup(){
   motionDetection = new MotionDetection(new Capture(this, cameras[13]), areas);
   graphics = new CubeGraphics[1];
   graphics[0] = new CubeGraphics(areas[0]);
+  
+  //spout = new Spout(this);
+  //spout.createSender("Provada_Cubes");
 }
 
 void draw(){
@@ -36,4 +42,6 @@ void draw(){
   motionDetection.Detect();
   
   graphics[0].Tick();
+  
+  //spout.sendTexture();
 }
