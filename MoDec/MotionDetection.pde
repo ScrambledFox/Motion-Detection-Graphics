@@ -28,7 +28,7 @@ class MotionDetection {
     cam.loadPixels();
     prev.loadPixels();
     
-    float threshold = 60;
+    float threshold = 128;
     int detectionRate = 0;
     
     loadPixels();
@@ -84,8 +84,8 @@ class MotionDetection {
   }
   
   public boolean LiesWithinArea(int px, int py, int ax, int ay, float size){
-    return (px >= ax && px <= ax + size) &&
-           (py >= ay && py <= ay + size);
+    return (px >= ax - size/2f && px <= ax + size/2f) &&
+           (py >= ay - size/2f && py <= ay + size/2f);
   }
   
   public DetectionArea GetDetectionArea (int x, int y) {
