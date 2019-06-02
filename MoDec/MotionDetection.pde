@@ -7,36 +7,38 @@ class MotionDetection {
   
   boolean doVisualisation = false;
   
+  PImage difference;
+  
   //int pixelsDetected;
   
   public MotionDetection ( Capture cam, DetectionArea[] detectionAreas ) {
     this.cam = cam;
     this.detectionAreas = detectionAreas;
     
-    cam.start();
-    prev = createImage(960, 540, RGB);
+    //this.cam.start();
+    prev = createImage(width, height, RGB);
+    difference = createImage(width, height, RGB);
   }
   
-  public int Detect () {
-    if(cam.available()){
-      prev.copy(cam, 0, 0, cam.width, cam.height, 0, 0, prev.width, prev.height);
+  public void Detect () {
+    if(this.cam.available()){
+      prev.copy(cam, 0, 0, this.cam.width, this.cam.height, 0, 0, prev.width, prev.height);
       prev.updatePixels();
     
-      cam.read();
+      this.cam.read();
     }
     
-    cam.loadPixels();
+    difference.loadPixels();
+    this.cam.loadPixels();
     prev.loadPixels();
     
-    float threshold = 128;
-    int detectionRate = 0;
+    float threshold = 4000;
     
-    loadPixels();
-    for(int x = 0; x < cam.width; x++){
-      for(int y = 0; y < cam.height; y++){
-        int i = x + y * cam.width;
+    for(int x = 0; x < this.cam.width; x++){
+      for(int y = 0; y < this.cam.height; y++){
+        int i = x + y * this.cam.width;
         
-        color currentColour = cam.pixels[i];
+        color currentColour = this.cam.pixels[i];
         float r1 = red(currentColour);
         float g1 = green(currentColour);
         float b1 = blue(currentColour);
@@ -46,18 +48,23 @@ class MotionDetection {
         float b2 = blue(prevColour);
         
         float d = DistSq3D(r1, g1, b1, r2, g2, b2);
-        if (d < threshold * threshold) {
-          if (doVisualisation) pixels[i] = color(0);
+        if (d < threshold) {
+          if (doVisualisation) difference.pixels[i] = color(0);
         }
         else {
-          if (doVisualisation) pixels[i] = color(255);
+          if (doVisualisation) difference.pixels[i] = color(255);
           
           DetectionArea area = GetDetectionArea(x, y);
           if (area != null) area.detections++;
         }
       }
     }
-    updatePixels();
+    
+    difference.updatePixels();
+    this.cam.updatePixels();
+    prev.updatePixels();
+    
+    if(doVisualisation) image(difference, 0, 0);
     
     for(int k = 0; k < detectionAreas.length; k++){
       detectionAreas[k].Tick();
@@ -68,7 +75,6 @@ class MotionDetection {
     }
     
     doVisualisation = false;
-    return detectionRate;
   }
   
   public void Visualise () {

@@ -2,8 +2,10 @@ class CubeGraphics {
 
   int index = 0;
   
-  int intensity = 0;
-  float fadeSpeed = 10f;
+  int maxActiveFrames = 30 * 5;
+  int activeFrames = maxActiveFrames;
+  
+  Animation currentAnimation;
   
   DetectionArea area;
   
@@ -13,27 +15,21 @@ class CubeGraphics {
   }
   
   public void Tick() {
-    if(area.active) intensity = 255;
-    if(intensity > 0) {
-      intensity -= fadeSpeed;
-      Draw();
-    }
+    if(currentAnimation == null) SetDefaultAnimation();
+    if(area.active && currentAnimation.type == "idle") SetActiveAnimation();
+    
+    if(currentAnimation.type == "active") activeFrames--;
+    if(activeFrames <= 0) {SetDefaultAnimation(); activeFrames = maxActiveFrames;}
+    
+    currentAnimation.Draw();
   }
   
-  public void Draw () {
-    pushStyle();
-    //strokeWeight(10);
-    //stroke(255, 0, 0, intensity);
-    
-    /*
-    float y = (sin((frameCount / 50f) + index) / 2f + 1) * height - height / 2f;
-    line(index * width / 5, y, width / 5 * (index + 1), y);
-    */
-    
-    fill(255, intensity);
-    rect(index * width / 5, 0 , width/5, height);
-    
-    popStyle();
+  public void SetDefaultAnimation(){
+    currentAnimation = new Animation(index, "idle");
+  }
+  
+  public void SetActiveAnimation(){
+    currentAnimation = new Animation(index, "active");
   }
   
 }

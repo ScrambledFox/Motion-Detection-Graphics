@@ -4,7 +4,7 @@ class DetectionArea{
   float size;
   
   int detections = 0;
-  float threshold = 1;
+  float threshold = 100;
   
   boolean active;
   
